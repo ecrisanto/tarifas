@@ -249,21 +249,48 @@ if($cambia == '' && $guarda != '' && $aduana != '')
                 echo "<th>Monto</th>";                                              
                 echo "</tr>";
             echo "</thead>";
-            echo "<tbody>";            
-                                                         
-                If($row[3] == '')
-                   $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
-                                    from desglosetarifa des JOIN tarifa tar 
-                                    where des.kfTarifa = tar.idTarifa 
-                                    and tar.cliente = '".$row[1]."' and tar.operacion = ".$row[4];                    
-                else
-                    $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
-                        from desglosetarifa des JOIN tarifa tar JOIN condiciontarifa con 
-                        where des.kfTarifa = tar.idTarifa 
-                        and con.kfDesgloseTarifa = des.idDesgloseTarifa 
-                        and tar.cliente = '".$row[1]."' 
-                        and tar.operacion = ".$row[4]."
-                        and con.idCondicion = ".$row[3];
+            echo "<tbody>";   
+            
+            //echo "Aduana: ".$row[2];
+                //Se tiene dato Aduana
+                if($row[2] != '' )
+                {
+                    //Se tiene división
+                    if($row[3] != '')                    
+                        $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
+                            from desglosetarifa des JOIN tarifa tar JOIN condiciontarifa con 
+                            where des.kfTarifa = tar.idTarifa 
+                            and con.kfDesgloseTarifa = des.idDesgloseTarifa 
+                            and tar.cliente = '".$row[1]."' 
+                            and tar.operacion = ".$row[4]."
+                            and tar.aduana = '".$row[2]."'
+                            and con.idCondicion = ".$row[3];                    
+                    else
+                        $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
+                            from desglosetarifa des JOIN tarifa tar 
+                            where des.kfTarifa = tar.idTarifa 
+                            and tar.cliente = '".$row[1]."'
+                            and tar.operacion = ".$row[4]." 
+                            and tar.aduana = '".$row[2]."'";                                                                                              
+                }else
+                {       
+                    //No se tiene Aduana
+                    //Se tiene división
+                    If($row[3] != '')
+                        $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
+                            from desglosetarifa des JOIN tarifa tar JOIN condiciontarifa con 
+                            where des.kfTarifa = tar.idTarifa 
+                            and con.kfDesgloseTarifa = des.idDesgloseTarifa 
+                            and tar.cliente = '".$row[1]."' 
+                            and tar.operacion = ".$row[4]."
+                            and con.idCondicion = ".$row[3];
+                    else
+                       $consulta = "select des.idDesgloseTarifa, des.itemId, des.importe, des.aplicaFactor 
+                            from desglosetarifa des JOIN tarifa tar 
+                            where des.kfTarifa = tar.idTarifa 
+                            and tar.cliente = '".$row[1]."' 
+                            and tar.operacion = ".$row[4];                                        
+                }                                               
                                     
                 echo $consulta;
                 $idTarFactor = mysqli_query($con, $consulta);
